@@ -15,6 +15,7 @@ class _PhilosphyTabState extends State<PhilosphyTab> {
 
   CollectionReference philosphersRef =
       FirebaseFirestore.instance.collection('Philosphers');
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,7 +40,7 @@ class _PhilosphyTabState extends State<PhilosphyTab> {
                     Map<String, dynamic> data =
                         document.data()! as Map<String, dynamic>;
                     return ListTile(
-                      trailing:PopupMenuButton(
+                      trailing: PopupMenuButton(
                         color: Colors.white,
                         elevation: 4,
                         padding: EdgeInsets.zero,
@@ -49,62 +50,53 @@ class _PhilosphyTabState extends State<PhilosphyTab> {
                           Icons.more_vert,
                         ),
                         itemBuilder: (context) => [
-                              PopupMenuItem(
-                                value: 1,
-                                child: PopupMenuItem(
-                                  value: 2,
-                                  child: ListTile(
-                                    onTap: () {
-                                      Navigator.pop(context);
-
-                                      philosphersRef
-                                          .doc(snapshot
-                                              .child('id')
-                                              .value
-                                              .toString())
-                                          .update({'title': 'nice world'})
-                                          .then((value) {})
-                                          .onError((error, stackTrace) {
-                                            Utils()
-                                                .toastMessage(error.toString());
-                                          });
-                                    },
-                                    leading: const Icon(Icons.edit),
-                                    title: const Text('Edit'),
+                          PopupMenuItem(
+                            value: 1,
+                            child: ListTile(
+                              onTap: () {
+                                Navigator.pop(context);
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        UpdatePhilosopherScreen(
+                                      documentId: document.id,
+                                      initialTitle: data['title'],
+                                      initialSubtitle: data['subtitle'],
+                                    ),
                                   ),
-                                ),
-                              ),
-                              PopupMenuItem(
-                                value: 2,
-                                child: ListTile(
-                                  onTap: () {
-                                    Navigator.pop(context);
-
-                                    // ref.child(snapshot.child('id').value.toString()).update(
-                                    //     {
-                                    //       'ttitle' : 'hello world'
-                                    //     }).then((value){
-                                    //
-                                    // }).onError((error, stackTrace){
-                                    //   Utils().toastMessage(error.toString());
-                                    // });
-                                    ref
-                                        .child(snapshot
-                                            .child('id')
-                                            .value
-                                            .toString())
-                                        .remove()
-                                        .then((value) {})
-                                        .onError((error, stackTrace) {
-                                      Utils().toastMessage(error.toString());
-                                    });
-                                  },
-                                  leading: const Icon(Icons.delete_outline),
-                                  title: const Text('Delete'),
-                                ),
-                              ),
-                            ]),
-                  
+                                );
+                              },
+                              leading: const Icon(Icons.edit),
+                              title: const Text('Edit'),
+                            ),
+                          ),
+                          PopupMenuItem(
+                            value: 2,
+                            child: ListTile(
+                              onTap: () {
+                                Navigator.pop(context);
+                                philosphersRef
+                                    .doc(document.id)
+                                    .delete()
+                                    .then((value) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                          content:
+                                              Text('Deleted successfully')));
+                                }).catchError((error) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                          content: Text(
+                                              'Failed to delete: $error')));
+                                });
+                              },
+                              leading: const Icon(Icons.delete_outline),
+                              title: const Text('Delete'),
+                            ),
+                          ),
+                        ],
+                      ),
                       title: Text(data['title'].toString()),
                       subtitle: Text(data['subtitle']),
                       onTap: () {},
@@ -125,6 +117,104 @@ class _PhilosphyTabState extends State<PhilosphyTab> {
               ));
         },
         child: const Icon(Icons.add),
+      ),
+    );
+  }
+}
+
+class UpdatePhilosopherScreen extends StatefulWidget {
+  final String documentId;
+  final String initialTitle;
+  final String initialSubtitle;
+
+  const UpdatePhilosopherScreen({
+    super.key,
+    required this.documentId,
+    required this.initialTitle,
+    required this.initialSubtitle,
+  });
+
+  @override
+  _UpdatePhilosopherScreenState createState() =>
+      _UpdatePhilosopherScreenState();
+}
+
+class _UpdatePhilosopherScreenState extends State<UpdatePhilosopherScreen> {
+  final _formKey = GlobalKey<FormState>();
+  late TextEditingController _titleController;
+  late TextEditingController _subtitleController;
+
+  @override
+  void initState() {
+    super.initState();
+    _titleController = TextEditingController(text: widget.initialTitle);
+    _subtitleController = TextEditingController(text: widget.initialSubtitle);
+  }
+
+  @override
+  void dispose() {
+    _titleController.dispose();
+    _subtitleController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Update Philosopher'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              TextFormField(
+                controller: _titleController,
+                decoration: const InputDecoration(labelText: 'Title'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter a title';
+                  }
+                  return null;
+                },
+              ),
+              TextFormField(
+                controller: _subtitleController,
+                decoration: const InputDecoration(labelText: 'Subtitle'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter a subtitle';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    FirebaseFirestore.instance
+                        .collection('Philosphers')
+                        .doc(widget.documentId)
+                        .update({
+                      'title': _titleController.text,
+                      'subtitle': _subtitleController.text,
+                    }).then((value) {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                          content: Text('Updated successfully')));
+                      Navigator.pop(context);
+                    }).catchError((error) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Failed to update: $error')));
+                    });
+                  }
+                },
+                child: const Text('Update'),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
