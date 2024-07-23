@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:motivated_admin/configphilospher/add_philospher.dart';
+import 'package:motivated_admin/configphilospher/philospher_concept.dart';
 import 'package:motivated_admin/configphilospher/update_philospher.dart';
 import 'package:motivated_admin/reusablewidgets/reusable_neomorphism_button.dart';
 import 'package:motivated_admin/utils/utils.dart';
@@ -18,7 +19,7 @@ class _PhilosphyTabState extends State<PhilosphyTab> {
 
   CollectionReference philosphersRef =
       FirebaseFirestore.instance.collection('philosphers');
-
+late String name;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,19 +37,7 @@ class _PhilosphyTabState extends State<PhilosphyTab> {
                       toggleElevation: true),
                 );
               }
-              if (snapshot.data == null || snapshot.data!.docs.isEmpty) {
-                return Padding(
-                  padding: EdgeInsets.only(
-                      top: MediaQuery.of(context).size.height / 3),
-                  child: Center(
-                    child: ReusableNeomorphismButton(
-                        title: 'No philosphers available',
-                        onTap: () {},
-                        toggleElevation: true),
-                  ),
-                );
-              }
-              if (snapshot.connectionState == ConnectionState.waiting) {
+              else if (snapshot.connectionState == ConnectionState.waiting) {
                 return Padding(
                   padding: EdgeInsets.only(
                       top: MediaQuery.of(context).size.height / 3),
@@ -59,12 +48,28 @@ class _PhilosphyTabState extends State<PhilosphyTab> {
                 );
               }
 
+            else  if (snapshot.data == null || snapshot.data!.docs.isEmpty) {
+                return Padding(
+                  padding: EdgeInsets.only(
+                      top: MediaQuery.of(context).size.height / 3),
+                  child: Center(
+                    child: ReusableNeomorphismButton(
+                        title: 'No philosphers available',
+                        onTap: () {
+                       
+                        },
+                        toggleElevation: true),
+                  ),
+                );
+              }
+             
               return Expanded(
                 child: ListView(
                   children:
                       snapshot.data!.docs.map((DocumentSnapshot document) {
                     Map<String, dynamic> data =
                         document.data()! as Map<String, dynamic>;
+                        name = data['title'];
                     return ListTile(
                       trailing: PopupMenuButton(
                         color: Colors.white,

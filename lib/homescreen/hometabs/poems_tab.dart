@@ -11,9 +11,9 @@ class PoemTab extends StatefulWidget {
 }
 
 class _PoemTabState extends State<PoemTab> {
-  final fireStore = FirebaseFirestore.instance.collection('users').snapshots();
+  final fireStore = FirebaseFirestore.instance.collection('poets').snapshots();
 
-  CollectionReference users = FirebaseFirestore.instance.collection('users');
+  CollectionReference users = FirebaseFirestore.instance.collection('poets');
   @override
   Widget build(BuildContext context) {
     return Scaffold(

@@ -7,12 +7,12 @@ import 'package:motivated_admin/theme/theme_data.dart';
 import 'package:motivated_admin/utils/utils.dart';
 import 'package:provider/provider.dart';
 
-class UpdatePhilosopherScreen extends StatefulWidget {
+class UpdateConcept extends StatefulWidget {
   final String documentId;
   final String initialTitle;
   final String initialSubtitle;
 
-  const UpdatePhilosopherScreen({
+  const UpdateConcept({
     super.key,
     required this.documentId,
     required this.initialTitle,
@@ -20,11 +20,11 @@ class UpdatePhilosopherScreen extends StatefulWidget {
   });
 
   @override
-  State<UpdatePhilosopherScreen> createState() =>
-      _UpdatePhilosopherScreenState();
+  State<UpdateConcept> createState() =>
+      _UpdateConceptState();
 }
 
-class _UpdatePhilosopherScreenState extends State<UpdatePhilosopherScreen> {
+class _UpdateConceptState extends State<UpdateConcept> {
   final _formKey = GlobalKey<FormState>();
   late TextEditingController _titleController;
   late TextEditingController _subtitleController;
@@ -54,7 +54,7 @@ class _UpdatePhilosopherScreenState extends State<UpdatePhilosopherScreen> {
         centerTitle: true,
         backgroundColor: AppTheme.hintColor,
         title: Text(
-          'Update Philospher',
+          'Update Concept',
           style: Theme.of(context).textTheme.displayLarge,
         ),
       ),
@@ -68,7 +68,7 @@ class _UpdatePhilosopherScreenState extends State<UpdatePhilosopherScreen> {
             ReusableTextField(
                 currentFocusNode: titleFocusNode,
                 controller: _titleController,
-                hintAndLabelText: 'Title',
+                hintAndLabelText: 'Concept Name',
                 onFieldSubmitted: (value) {
                   Utils.fieldFocusChange(
                       context, titleFocusNode, subtitleFocusNode);
@@ -79,7 +79,7 @@ class _UpdatePhilosopherScreenState extends State<UpdatePhilosopherScreen> {
             ReusableTextField(
               currentFocusNode: subtitleFocusNode,
               controller: _titleController,
-              hintAndLabelText: 'Subtitle',
+              hintAndLabelText: 'Explaination',
             ),
             const SizedBox(height: 40),
             Consumer<UpdateProvider>(

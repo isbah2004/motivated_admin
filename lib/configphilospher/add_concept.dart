@@ -6,17 +6,18 @@ import 'package:motivated_admin/theme/theme_data.dart';
 import 'package:motivated_admin/utils/utils.dart';
 import 'package:provider/provider.dart';
 
-class AddPhilospher extends StatefulWidget {
-  const AddPhilospher({super.key});
+class AddConcept extends StatefulWidget {
+  final String name;
+  const AddConcept({super.key, required this.name});
 
   @override
-  State<AddPhilospher> createState() => _AddPhilospherState();
+  State<AddConcept> createState() => _AddConceptState();
 }
 
-class _AddPhilospherState extends State<AddPhilospher> {
+class _AddConceptState extends State<AddConcept> {
   final TextEditingController titleController = TextEditingController();
   final TextEditingController subTitleController = TextEditingController();
-  final addPhilospher = FirebaseFirestore.instance;
+  final addConcept = FirebaseFirestore.instance;
   final FocusNode titleFocusNode = FocusNode();
   final FocusNode subtitleFocusNode = FocusNode();
 
@@ -38,7 +39,7 @@ class _AddPhilospherState extends State<AddPhilospher> {
         centerTitle: true,
         backgroundColor: AppTheme.hintColor,
         title: Text(
-          'Add Philospher',
+          'Add Concept',
           style: Theme.of(context).textTheme.displayLarge,
         ),
       ),
@@ -53,8 +54,8 @@ class _AddPhilospherState extends State<AddPhilospher> {
               focusNode: titleFocusNode,
               controller: titleController,
               decoration: InputDecoration(
-                hintText: 'Title',
-                labelText: 'Title',
+                hintText: 'name',
+                labelText: 'name',
                 fillColor: AppTheme.textFieldFilledColor,
                 filled: true,
                 border: OutlineInputBorder(
@@ -78,8 +79,8 @@ class _AddPhilospherState extends State<AddPhilospher> {
               minLines: 1,
               maxLines: 3,
               decoration: InputDecoration(
-                hintText: 'Subtitle',
-                labelText: 'Subtitle',
+                hintText: 'Concept',
+                labelText: 'Concept',
                 fillColor: AppTheme.textFieldFilledColor,
                 filled: true,
                 border: OutlineInputBorder(
@@ -94,20 +95,20 @@ class _AddPhilospherState extends State<AddPhilospher> {
           Consumer<AddPhilospherProvider>(
             builder: (BuildContext context, provider, Widget? child) {
               return NeomorphismLoadingButton(
-                  title: 'Add Philospher',
+                  title: 'Add Concept',
                   onTap: () {
                     provider.setLoading(true);
 
-                    addPhilospher.collection('philosphers').add({
-                      'title': titleController.text.toString(),
-                      'subtitle': subTitleController.text.toString(),
+                    addConcept.collection(widget.name.toString()).add({
+                      'name': titleController.text.toString(),
+                      'concept': subTitleController.text.toString(),
                       'id': DateTime.now().millisecondsSinceEpoch.toString()
                     }).then((value) {
                       Navigator.pop(context);
                       provider.setLoading(false);
                       Utils.showMessage(
                           context: context,
-                          title: 'Philospher successfully added',
+                          title: 'Concept successfully added',
                           message: ' ');
                     }).onError((error, stackTrace) {
                       Utils.showMessage(
