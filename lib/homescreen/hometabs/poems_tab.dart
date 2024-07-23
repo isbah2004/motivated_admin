@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:motivated_admin/reusablewidgets/neomorphism_loading_button.dart';
+import 'package:motivated_admin/reusablewidgets/reusable_neomorphism_button.dart';
 
 class PoemTab extends StatefulWidget {
   const PoemTab({super.key});
@@ -22,11 +24,30 @@ class _PoemTabState extends State<PoemTab> {
             builder:
                 (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
               if (snapshot.hasError) {
-                return const Text('Something went wrong');
+                return Center(
+                  child: ReusableNeomorphismButton(
+                      title: 'Something went wrong',
+                      onTap: () {},
+                      toggleElevation: true),
+                );
               }
-
+              if (snapshot.data == null || snapshot.data!.docs.isEmpty) {
+                return Padding(
+                  padding: EdgeInsets.only(
+                      top: MediaQuery.of(context).size.height / 3),
+                  child: Center(
+                    child: ReusableNeomorphismButton(
+                        title: 'No poets available',
+                        onTap: () {},
+                        toggleElevation: true),
+                  ),
+                );
+              }
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Text("Loading");
+                return Center(
+                  child: NeomorphismLoadingButton(
+                      title: 'Loading', onTap: () {}, toggleElevation: true),
+                );
               }
 
               return Expanded(

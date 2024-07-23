@@ -5,6 +5,7 @@ import 'package:motivated_admin/firebase_options.dart';
 import 'package:motivated_admin/internetconnectivitysetup/internet_connecitivity.dart';
 import 'package:motivated_admin/provider/drawer_button_provider.dart';
 import 'package:motivated_admin/provider/home_providers.dart';
+import 'package:motivated_admin/provider/update_provider.dart';
 import 'package:motivated_admin/splashscreen/splash_screen.dart';
 import 'package:motivated_admin/theme/theme_data.dart';
 import 'package:provider/provider.dart';
@@ -30,6 +31,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AboutButtonProvider()),
         ChangeNotifierProvider(create: (_) => RateButtonProvider()),
         ChangeNotifierProvider(create: (_) => AddPhilospherProvider()),
+        ChangeNotifierProvider(create: (_) => UpdateProvider()),
       ],
       child: GetMaterialApp(
         debugShowCheckedModeBanner: false,

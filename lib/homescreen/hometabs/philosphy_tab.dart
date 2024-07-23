@@ -1,6 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:motivated_admin/addphilospher/add_philospher.dart';
+import 'package:motivated_admin/configphilospher/add_philospher.dart';
+import 'package:motivated_admin/configphilospher/update_philospher.dart';
+import 'package:motivated_admin/reusablewidgets/reusable_neomorphism_button.dart';
+import 'package:motivated_admin/utils/utils.dart';
 
 class PhilosphyTab extends StatefulWidget {
   const PhilosphyTab({super.key});
@@ -14,7 +17,7 @@ class _PhilosphyTabState extends State<PhilosphyTab> {
       FirebaseFirestore.instance.collection('philosphers').snapshots();
 
   CollectionReference philosphersRef =
-      FirebaseFirestore.instance.collection('Philosphers');
+      FirebaseFirestore.instance.collection('philosphers');
 
   @override
   Widget build(BuildContext context) {
@@ -26,11 +29,34 @@ class _PhilosphyTabState extends State<PhilosphyTab> {
             builder:
                 (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
               if (snapshot.hasError) {
-                return const Text('Something went wrong');
+                return Center(
+                  child: ReusableNeomorphismButton(
+                      title: 'Something went wrong',
+                      onTap: () {},
+                      toggleElevation: true),
+                );
               }
-
+              if (snapshot.data == null || snapshot.data!.docs.isEmpty) {
+                return Padding(
+                  padding: EdgeInsets.only(
+                      top: MediaQuery.of(context).size.height / 3),
+                  child: Center(
+                    child: ReusableNeomorphismButton(
+                        title: 'No philosphers available',
+                        onTap: () {},
+                        toggleElevation: true),
+                  ),
+                );
+              }
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Text("Loading");
+                return Padding(
+                  padding: EdgeInsets.only(
+                      top: MediaQuery.of(context).size.height / 3),
+                  child: Center(
+                    child: ReusableNeomorphismButton(
+                        title: 'Loading', onTap: () {}, toggleElevation: true),
+                  ),
+                );
               }
 
               return Expanded(
@@ -80,15 +106,15 @@ class _PhilosphyTabState extends State<PhilosphyTab> {
                                     .doc(document.id)
                                     .delete()
                                     .then((value) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                          content:
-                                              Text('Deleted successfully')));
+                                  Utils.showMessage(
+                                      context: context,
+                                      title: 'Deleted successfully',
+                                      message: ' ');
                                 }).catchError((error) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                          content: Text(
-                                              'Failed to delete: $error')));
+                                  Utils.showMessage(
+                                      context: context,
+                                      title: 'Failed to delete',
+                                      message: error.toString());
                                 });
                               },
                               leading: const Icon(Icons.delete_outline),
@@ -117,104 +143,6 @@ class _PhilosphyTabState extends State<PhilosphyTab> {
               ));
         },
         child: const Icon(Icons.add),
-      ),
-    );
-  }
-}
-
-class UpdatePhilosopherScreen extends StatefulWidget {
-  final String documentId;
-  final String initialTitle;
-  final String initialSubtitle;
-
-  const UpdatePhilosopherScreen({
-    super.key,
-    required this.documentId,
-    required this.initialTitle,
-    required this.initialSubtitle,
-  });
-
-  @override
-  _UpdatePhilosopherScreenState createState() =>
-      _UpdatePhilosopherScreenState();
-}
-
-class _UpdatePhilosopherScreenState extends State<UpdatePhilosopherScreen> {
-  final _formKey = GlobalKey<FormState>();
-  late TextEditingController _titleController;
-  late TextEditingController _subtitleController;
-
-  @override
-  void initState() {
-    super.initState();
-    _titleController = TextEditingController(text: widget.initialTitle);
-    _subtitleController = TextEditingController(text: widget.initialSubtitle);
-  }
-
-  @override
-  void dispose() {
-    _titleController.dispose();
-    _subtitleController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Update Philosopher'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              TextFormField(
-                controller: _titleController,
-                decoration: const InputDecoration(labelText: 'Title'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a title';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: _subtitleController,
-                decoration: const InputDecoration(labelText: 'Subtitle'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a subtitle';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    FirebaseFirestore.instance
-                        .collection('Philosphers')
-                        .doc(widget.documentId)
-                        .update({
-                      'title': _titleController.text,
-                      'subtitle': _subtitleController.text,
-                    }).then((value) {
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                          content: Text('Updated successfully')));
-                      Navigator.pop(context);
-                    }).catchError((error) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Failed to update: $error')));
-                    });
-                  }
-                },
-                child: const Text('Update'),
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }

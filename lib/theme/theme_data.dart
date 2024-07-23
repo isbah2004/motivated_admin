@@ -26,6 +26,20 @@ class AppTheme {
   );
 
   static ThemeData lightTheme = ThemeData(
+    progressIndicatorTheme:
+        const ProgressIndicatorThemeData(color: primaryColor),
+    popupMenuTheme: const PopupMenuThemeData(
+      color: hintColor,
+      iconColor: primaryColor,
+      shadowColor: hintColor,
+      surfaceTintColor: hintColor,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(8)),
+      ),
+    ),
+    iconTheme: const IconThemeData(color: primaryColor),
+    scaffoldBackgroundColor: hintColor,
+    appBarTheme: const AppBarTheme(backgroundColor: hintColor),
     primaryColor: primaryColor,
     hintColor: hintColor,
     textTheme: TextTheme(

@@ -52,7 +52,9 @@ class _AddPhilospherState extends State<AddPhilospher> {
             child: TextFormField(
               focusNode: titleFocusNode,
               controller: titleController,
-              decoration: InputDecoration(hintText: 'Title',labelText: 'Title',
+              decoration: InputDecoration(
+                hintText: 'Title',
+                labelText: 'Title',
                 fillColor: AppTheme.textFieldFilledColor,
                 filled: true,
                 border: OutlineInputBorder(
@@ -75,7 +77,9 @@ class _AddPhilospherState extends State<AddPhilospher> {
               controller: subTitleController,
               minLines: 1,
               maxLines: 3,
-              decoration: InputDecoration(hintText: 'Subtitle',labelText: 'Subtitle',
+              decoration: InputDecoration(
+                hintText: 'Subtitle',
+                labelText: 'Subtitle',
                 fillColor: AppTheme.textFieldFilledColor,
                 filled: true,
                 border: OutlineInputBorder(
@@ -99,12 +103,12 @@ class _AddPhilospherState extends State<AddPhilospher> {
                       'subtitle': subTitleController.text.toString(),
                       'id': DateTime.now().millisecondsSinceEpoch.toString()
                     }).then((value) {
-                      
                       Utils.showMessage(
                           context: context,
                           title: 'Philospher successfully added',
                           message: ' ');
                       provider.setLoading(false);
+                      Navigator.pop(context);
                     }).onError((error, stackTrace) {
                       Utils.showMessage(
                           context: context,
